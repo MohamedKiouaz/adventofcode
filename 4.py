@@ -5,7 +5,6 @@ with open('4.txt') as f:
 
 content = [x.strip().lower() for x in content]
 
-
 total = 0
 
 def points(n_wins):
@@ -38,7 +37,6 @@ for i, line in enumerate(content):
 
     for j in range(i + 1, i + 1 + wins.count(True)):
         scratchcards[j] += scratchcards[i]
-
 
 print(total)
 print(sum(scratchcards))
