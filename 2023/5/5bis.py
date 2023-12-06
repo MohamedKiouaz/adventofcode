@@ -2,7 +2,7 @@ from tqdm import tqdm
 from functools import reduce
 from dataclasses import dataclass
 
-with open('5_mini.txt') as f:
+with open('5s.txt') as f:
     content = f.readlines()
 
 content = [x.strip().lower() for x in content]
