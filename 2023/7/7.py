@@ -45,7 +45,7 @@ def value(cards):
     elif len(set(cards)) == 4:
         return 1
     
-    return 6 - len(set(cards))
+    return 0
 
 value_to_str =  ["High Card", "Pair", "Two Pairs", "Three of a Kind", "Full House", "Four of a Kind", "Five of a kind"]
 
