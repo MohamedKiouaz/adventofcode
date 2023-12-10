@@ -60,62 +60,11 @@ def test(L):
             return
 
     print(state)
+    print([length - offset for offset, length in state])
 
-    # N = np.zeros((len(state), len(state)))
-    # R = np.zeros((len(state), 1))
-    # for i in range(len(state) - 1):
-    #     offset, length = state[i]
-    #     offset_next, length_next = state[i + 1]
-    #     N[i, i] = length - offset
-    #     N[i, i + 1] = -(length_next + offset_next)
-    #     R[i, 0] = offset_next - offset
-
-    # res = np.linalg.solve(N, R).astype(int)
-    # if any(res < 0):
-    #     print("negative solution", res)
-
-    # for i, n in enumerate(res):
-    #     offset, length = state[i]
-    #     print(f"{offset + n * (length - offset)}")
-
-    sums = np.array([0 for k in range(len(state))]).astype(np.ulonglong)
-    total = 2_000_000_000_000
-    with tqdm(total=total) as pbar:
-        while max(sums) < total:
-            arg_min = np.argmin(sums)
-            offset, length = state[arg_min]
-            sums[arg_min] += length - offset
-
-            if all([sums[i] == sums[i + 1] for i in range(len(sums) - 1)]):
-                print("maybe answer", sums[0])
-            
-            pbar.update(max(sums) - pbar.n)
-
-    # candidates = []
-    # for offset, length in state:
-    #     n = 0
-    #     i = 0
-    #     while n < 2_000_000_000_000:
-    #         n = offset + i * (length - offset)
-    #         i += 1
-    #         candidates.append(n)
-    #         if i % 100_000 == 0:
-    #             print(i, n)
-
-    # unique_candidates = set()
-    # for k in candidates:
-    #     unique_candidates.update(k)
-
-    # for k in unique_candidates:
-    #     closest = [bisect_left(c, k) for c in candidates]
-    #     if not all([closest[i] < len(candidates) for i in range(len(candidates))]):
-    #         continue
-
-    #     if all([k == c for c in closest]):
-    #         print("maybe answer", k)
+    reduced = reduce(ppcm, [length - offset for offset, length in state])
+    print(reduced)
     
-    print("That's all folks")
-
 times = [[] for k in  range(len(currents))]
 len_times = 0
 i = 0
