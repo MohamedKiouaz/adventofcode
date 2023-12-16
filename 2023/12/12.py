@@ -1,7 +1,6 @@
 import numpy as np
 from tqdm import tqdm
 from itertools import combinations
-from concurrent.futures import ThreadPoolExecutor
 
 def split(line):
     s, goal = line.split(' ')
@@ -9,7 +8,12 @@ def split(line):
 
     return s, goal
 
+calls = 0
+
 def work(splitted_line):
+    global calls
+    calls += 1
+
     s, goal = splitted_line
 
     diese_count = s.count('#')
@@ -46,6 +50,7 @@ def work(splitted_line):
     
     return []
 
+
 with open('2023/12/12.txt') as f:
     content = f.readlines()
 
@@ -55,9 +60,8 @@ total = 0
 for line in tqdm(content):
     res = work(line)
 
-    # print(res)
-    # print(line, len(res))
-
     total += len(res)
+
+print(f"number of work calls: {calls}")
 
 print(total)

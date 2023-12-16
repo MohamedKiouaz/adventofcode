@@ -6,7 +6,7 @@ from concurrent.futures import ProcessPoolExecutor
 import math
 
 def ways(N, X):
-    return math.comb(N + X - 1, X)
+    return math.comb(N + X - 1, X - 1)
 
 def split(line):
     s, goal = line.split(' ')
