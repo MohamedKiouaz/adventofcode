@@ -10,7 +10,7 @@ def split(line):
 
 calls = 0
 
-def work(splitted_line, idx=0, already_done=set()):
+def lolo_work(splitted_line, idx=0, already_done=set()):
     if (splitted_line, idx) in already_done:
         return []
     else:
@@ -35,6 +35,14 @@ def work(splitted_line, idx=0, already_done=set()):
     # print(s, goal, idx)
 
     clean_blocks = [x for x in blocks if x != '']
+
+    i = 0
+    while i < len(clean_blocks):
+        if i >= len(clean_blocks) or i >= len(goal) or '?' in clean_blocks[i]:
+            break
+        if len(clean_blocks[i]) != goal[i]:
+            return []
+        i += 1
     
     if idx == 0:
         clean_blocks_len = [len(x) for x in clean_blocks if '?' not in x]
@@ -45,7 +53,7 @@ def work(splitted_line, idx=0, already_done=set()):
             i += 1
 
         if i > 0:
-            return work((s, goal), i, already_done)
+            return lolo_work((s, goal), i, already_done)
 
     if not '?' in s and len(clean_blocks) == len(goal):
         if all([len(x) == goal[i] for i, x in enumerate(clean_blocks)]):
@@ -64,7 +72,7 @@ def work(splitted_line, idx=0, already_done=set()):
             continue
         
         if '?' not in block and not once:
-            ret += work((s, goal), idx+1, already_done)
+            ret += lolo_work((s, goal), idx+1, already_done)
             once = True
 
         for i in range(len(block) - search_number + 1):
@@ -90,7 +98,7 @@ def work(splitted_line, idx=0, already_done=set()):
 
             new_s = '.'.join(new_blocks)
             
-            ret += work((new_s, goal), idx+1, already_done)
+            ret += lolo_work((new_s, goal), idx+1, already_done)
 
     return set(ret)
 
@@ -108,11 +116,11 @@ def extend(parsed_line):
 with open('2023/12/12.txt') as f:
     content = f.readlines()
 
-content = [extend(split(x.strip())) for x in content]
+content = [(split(x.strip())) for x in content]
 
 total = 0
 for line in tqdm(content):
-    res = work(line)
+    res = lolo_work(line)
 
     total += len(res)
 

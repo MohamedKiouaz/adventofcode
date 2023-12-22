@@ -10,12 +10,7 @@ def split(line):
 
 calls = 0
 
-def work(splitted_line, idx=0, already_done=set()):
-    if (splitted_line, idx) in already_done:
-        return []
-    else:
-        already_done.add((splitted_line, idx))
-
+def work(splitted_line, idx=0):
     global calls
     calls += 1
 
@@ -35,6 +30,14 @@ def work(splitted_line, idx=0, already_done=set()):
     # print(s, goal, idx)
 
     clean_blocks = [x for x in blocks if x != '']
+
+    i = 0
+    while i < len(clean_blocks):
+        if i >= len(clean_blocks) or i >= len(goal) or '?' in clean_blocks[i]:
+            break
+        if len(clean_blocks[i]) != goal[i]:
+            return []
+        i += 1
     
     if idx == 0:
         clean_blocks_len = [len(x) for x in clean_blocks if '?' not in x]
@@ -45,7 +48,7 @@ def work(splitted_line, idx=0, already_done=set()):
             i += 1
 
         if i > 0:
-            return work((s, goal), i, already_done)
+            return work((s, goal), i)
 
     if not '?' in s and len(clean_blocks) == len(goal):
         if all([len(x) == goal[i] for i, x in enumerate(clean_blocks)]):
@@ -64,33 +67,33 @@ def work(splitted_line, idx=0, already_done=set()):
             continue
         
         if '?' not in block and not once:
-            ret += work((s, goal), idx+1, already_done)
+            ret += work((s, goal), idx+1)
             once = True
 
         for i in range(len(block) - search_number + 1):
             new_block = block[:i] + '#' * search_number + block[i+search_number:]
             new_block = list(new_block)
 
-            if i > 0 and new_block[i-1] == '#':
-                continue
-        
+            if i > 0:
+                if new_block[i-1] == '#':
+                    continue
+                elif new_block[i-1] == '?':
+                    new_block[i-1] = '.'
+
             end_i = i + search_number
 
-            if end_i < len(new_block) and new_block[end_i] == '#':
-                continue
-
-            if i > 0 and new_block[i-1] == '?':
-                new_block[i-1] = '.'
-
-            if end_i < len(new_block) and new_block[end_i] == '?':
-                new_block[end_i] = '.'
+            if end_i < len(new_block):
+                if new_block[end_i] == '#':
+                    continue
+                elif new_block[end_i] == '?':
+                    new_block[end_i] = '.'
 
             new_blocks = list(blocks)
             new_blocks[block_number] = "".join(new_block)
 
             new_s = '.'.join(new_blocks)
             
-            ret += work((new_s, goal), idx+1, already_done)
+            ret += work((new_s, goal), idx+1)
 
     return set(ret)
 
@@ -98,6 +101,8 @@ with open('2023/12/12.txt') as f:
     content = f.readlines()
 
 content = [split(x.strip()) for x in content]
+
+print(max([x.count('?') for x, _ in content]))
 
 total = 0
 for line in tqdm(content):
