@@ -1,5 +1,6 @@
 import numpy as np
 import sys
+import tqdm
 
 sys.setrecursionlimit(2000000000)
 
@@ -9,14 +10,14 @@ with open('2023/10/10.txt') as f:
 content = [x.strip() for x in content]
 
 # unicode replacement for edges
-content_rewritten = [x.replace('L', '└').replace('J', '┘').replace('7', '┐').replace('F', '┌') for x in content]
+content_rewritten = [x.replace('L', '└').replace('J', '┘').replace('7', '┐').replace('F', '┌').replace('|', '│').replace('-', '─') for x in content]
 
 for line in content_rewritten:
     print(line)
 
 connections = {'|': ['N', 'S'], '-': ['E', 'W'], 'L': ['N', 'E'], 'J': ['N', 'W'], '7': ['S', 'W'], 'F': ['S', 'E']}
 
-cardinals = {'N': np.array([-1, 0]), 'S': np.array([1, 0]), 'E': np.array([0, 1]), 'W': np.array([0, -1])}
+cardinals = {'N': [-1, 0], 'S': [1, 0], 'E': [0, 1], 'W': [0, -1]}
 
 grid = np.ones((len(content), len(content[0])), dtype=np.int32) * -1
 
@@ -38,7 +39,9 @@ while True:
         break
 
     for i_, j_ in zip(current_positions[0], current_positions[1]):
-        for i, j in [[0, -1], [0, 1], [1, 0], [-1, 0]]:
+        cards_to_explore = connections[content[i_][j_]] if content[i_][j_] != 'S' else ['N', 'E', 'W', 'S']
+        for card_ in cards_to_explore:
+            i, j = cardinals[card_]
             ii = i_ + i
             jj = j_ + j
             if ii < 0 or ii >= len(content) or jj < 0 or jj >= len(content[0]):
@@ -59,7 +62,7 @@ while True:
                 
                 if grid[ii + card_x, jj + card_y] == step:
                     grid[ii, jj] = step + 1
-    
+        
     step += 1
 
 print(f"max step: {grid.max()}")
@@ -69,12 +72,18 @@ print(grid)
 def explore(m, i, j):
     if m[i, j] == m.max():
         return [(i, j)]
-
     stack = [(i, j, [(i, j)])]  # Initialize stack with starting coordinates and path
+    visited = set()
     while stack:
         i, j, path = stack.pop()
-        for jj in range(j - 1, j + 2):
-            for ii in range(i - 1, i + 2):
+
+        if (i, j) in visited:
+            continue
+        
+        visited.add((i, j))
+        
+        for ii in range(i - 1, i + 2):
+            for jj in range(j - 1, j + 2):
                 # Check boundary conditions
                 if ii < 0 or ii >= m.shape[0] or jj < 0 or jj >= m.shape[1]:
                     continue
@@ -95,7 +104,7 @@ print(grid)
 print("adada")
 loop = []
 xx, yy = np.where(grid == 1)
-for x, y in zip(xx[::-1], yy[::-1]):
+for x, y in zip(xx, yy):
     print(f'exploring {x}, {y}')
     g = grid.copy()
     for i, j in loop:
@@ -192,7 +201,7 @@ for i in range(grid.shape[0]):
             if last == 'L' and c == '7' or last == 'F' and c == 'J' or last == 'J' and c == 'F' or last == '7' and c == 'L':
                 crossed_edges += 1
                 last = ''
-            if c == 'L' or c == 'F' or c == '7' or c == 'J':
+            if c == 'L' or c == 'F' or c == '7' or c  == 'J':
                 last = c
             if c == '|':
                 crossed_edges += 1
